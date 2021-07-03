@@ -1,0 +1,32 @@
+name: Build
+on:
+  push:
+    branches: [master]
+  pull_request:
+    branches: [master]
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Install Java
+        uses: actions/setup-java@v2
+        with:
+          distribution: adopt
+          java-version: '11'
+
+      - name: Cache Maven Repository
+        uses: actions/cache@v2
+        with:
+          path: ~/.m2/repository
+          key: maven-build-${{ hashFiles('**/pom.xml') }}
+          restore-keys: |
+            maven-build-
+            maven-release-${{ hashFiles('**/pom.xml') }}
+            maven-release-
+            maven-
+
+      - name: Maven Build
+        run: ./mvnw -B clean verify

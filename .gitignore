@@ -1,0 +1,8 @@
+# maven
+target/
+# maven-release-plugin
+pom.xml.releaseBackup
+release.properties
+# idea
+.idea/
+*.iml

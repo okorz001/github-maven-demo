@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+
+  <groupId>org.korz.demos</groupId>
+  <artifactId>github-maven-demo</artifactId>
+  <version>1.0.0-SNAPSHOT</version>
+
+  <name>GitHub Maven Demo</name>
+  <description>Demonstration of GitHub Actions, Packages, and Pages with Maven Project</description>
+  <url>${github.url}</url>
+
+  <properties>
+    <github.owner>okorz001</github.owner>
+    <github.repo>${project.artifactId}</github.repo>
+    <github.url>https://github.com/${github.owner}/${github.repo}</github.url>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    <!-- TODO: this doesn't seem to be exposed as plugin configuration... -->
+    <project.scm.id>github</project.scm.id>
+  </properties>
+
+  <scm>
+    <url>${github.url}</url>
+    <connection>scm:git:${github.url}.git</connection>
+    <developerConnection>${project.scm.connection}</developerConnection>
+    <tag>HEAD</tag>
+  </scm>
+
+  <distributionManagement>
+    <repository>
+      <id>github</id>
+      <name>GitHub Packages</name>
+      <url>https://maven.pkg.github.com/${github.owner}/${github.repo}</url>
+    </repository>
+    <site>
+      <id>github</id>
+      <name>GitHub Pages</name>
+      <url>${project.scm.developerConnection}</url>
+    </site>
+  </distributionManagement>
+
+  <build>
+    <plugins>
+      <plugin>
+        <artifactId>maven-compiler-plugin</artifactId>
+        <version>3.8.1</version>
+        <configuration>
+          <release>11</release>
+        </configuration>
+      </plugin>
+
+      <plugin>
+        <artifactId>maven-release-plugin</artifactId>
+        <version>3.0.0-M4</version>
+        <configuration>
+          <!-- do not build during release:prepare -->
+          <preparationGoals>clean</preparationGoals>
+        </configuration>
+      </plugin>
+
+      <plugin>
+        <artifactId>maven-scm-publish-plugin</artifactId>
+        <version>3.1.0</version>
+        <configuration>
+          <serverId>github</serverId>
+          <scmBranch>gh-pages</scmBranch>
+        </configuration>
+        <executions>
+          <execution>
+            <id>publish-scm</id>
+            <phase>site-deploy</phase>
+            <goals>
+              <goal>publish-scm</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+
+      <plugin>
+        <artifactId>maven-site-plugin</artifactId>
+        <version>3.9.1</version>
+        <executions>
+          <!-- site:deploy doesn't work with scm urls yet, so remove it from build -->
+          <execution>
+            <id>default-deploy</id>
+            <phase>none</phase>
+          </execution>
+          <execution>
+            <id>stage</id>
+            <phase>post-site</phase>
+            <goals>
+              <goal>stage</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+    </plugins>
+  </build>
+
+</project>
